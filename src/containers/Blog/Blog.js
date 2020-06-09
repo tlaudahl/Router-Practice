@@ -1,13 +1,20 @@
-import React, { Component } from 'react';
+import React, { Component, Suspense } from 'react';
 import { Route, NavLink, Switch, Redirect } from 'react-router-dom';
 
 import './Blog.css';
 import Posts from './Posts/Posts';
-import NewPost from './NewPost/NewPost';
+// Without React Suspense
+// import asyncComponent from '../../hoc/asynComponent';
+// import NewPost from './NewPost/NewPost';
+// const AsyncNewPost = asyncComponent(() => {
+//     return import('./NewPost/NewPost');
+// });
+// With React Suspense
+const NewPost = React.lazy(() => import('./NewPost/NewPost'));
 
 class Blog extends Component {
     state = {
-        auth: false
+        auth: true
     }
 
     render () {
@@ -28,7 +35,10 @@ class Blog extends Component {
                 {/* <Route exact path='/' render={() => <Posts />} />
                 <Route exact path='/' render={() => <Posts />} /> */}
                 <Switch>
-                    {this.state.auth ? <Route path='/new-post' component={NewPost} /> : null}
+                    {/* Without React Suspense */}
+                    {/* {this.state.auth ? <Route path='/new-post' component={AsyncNewPost} /> : null} */}
+                    {/* With React Suspense */}
+                    {this.state.auth ? <Route path='/new-post' render={() => <Suspense fallback={<div>Loading...</div>}><NewPost /></Suspense>} /> : null}
                     <Route path='/posts' component={Posts} />
                     <Route render={() => <h1>Not Found</h1>}/> {/* Handles any unknown route */}
                     {/* <Redirect from="/" to ="/posts" /> */}
